@@ -1,14 +1,14 @@
-version: '3'
+version: '3.9'
 
 services:
   ms-node-a:
    image: ms-node-a
-   ports:
-     - 8080
+#   ports:
+#     - 8080
    environment:
      - SERVICE_PORTS=8080
    deploy:
-     replicas: 5
+     replicas: 3
      update_config:
        parallelism: 5
        delay: 10s
@@ -16,43 +16,27 @@ services:
        condition: on-failure
        max_attempts: 3
        window: 120s
-   networks:
-     - web
-
-  ms-node-b:
-   image: ms-node-b
-   ports:
-     - 8080
-   environment:
-     - SERVICE_PORTS=8080
-   deploy:
-     replicas: 5
-     update_config:
-       parallelism: 5
-       delay: 10s
-     restart_policy:
-       condition: on-failure
-       max_attempts: 3
-       window: 120s
+     endpoint_mode: dnsrr
    networks:
      - web
 
   proxy:
-    image: ms-haproxy
+    image: haproxytech/haproxy-debian:2.0
     depends_on:
-      - ms-node-a, ms-node-b
+      - ms-node-a
     environment:
       - BALANCE=leastconn
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - 80:80
+      - /data/apps/docker-swarm-haproxy-master/ms-haproxy:/etc/haproxy/
     networks:
       - web
+    dns:
+      - 127.0.0.11
+    ports:
+       - 80:80
     deploy:
       placement:
         constraints: [node.role == manager]
-
 networks:
   web:
     driver: overlay
