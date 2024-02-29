@@ -2,7 +2,7 @@ repo_name: ounghuy/docker-swarm-haproxy
 report_id: b945213ca1b610d102519e431365dfad
 version: 0.1
 repo_type: Public
-timestamp: '2024-01-17T02:58:53+00:00'
+timestamp: '2024-02-29T19:29:27+00:00'
 requested_by: ounghuy
 provider: github
 branch: master
